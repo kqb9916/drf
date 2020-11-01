@@ -64,6 +64,23 @@ class BookDeModelSerializer(serializers.ModelSerializer):
         print(obj)
         return obj
 
+class BookListSerializer(serializers.ListSerializer):
+    """
+    使用此序列化器完成更新多个对象
+    """
+    # 重写update方法
+    def update(self, instance, validated_data):
+        print(instance)
+        print(validated_data)
+        # instance 是要修改的对象  ； validated_data  是要修改的值
+
+        # TODO 将修改多个变成循环中每次修改一个
+        for index, obj in enumerate(instance):
+            # 没遍历一次 就修改一个对象的数据
+            self.child.update(obj.validated_data[index])
+
+        return instance
+
 
 # 序列化器与反序列化器整合
 class BookModelSerializerV2(serializers.ModelSerializer):
@@ -93,6 +110,7 @@ class BookModelSerializerV2(serializers.ModelSerializer):
             },
         }
 
+        list_serializer_class = BookListSerializer
         def validate(self, attrs):
             print(attrs)
             return attrs
